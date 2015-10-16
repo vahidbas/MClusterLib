@@ -1,0 +1,312 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Evaluation Spectral Clustering Algorithms</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-10-16"><meta name="DC.source" content="spectral_demo.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Evaluation Spectral Clustering Algorithms</h1><!--introduction--><p><b>Vahid Bastani - Sep. 2015</b></p><p>Evaluation of spectral clustering algorithms including unnormalized spectral clustering [1], normalized spectral clustering according to [2] and normalized spectral clustering according to [3].</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Data Generation</a></li><li><a href="#7">Clustering Algorithms</a></li><li><a href="#13">Results</a></li><li><a href="#16">References</a></li></ul></div><p>In each iteration a set of random data are generated using K number of 2-D Gaussian distribution with identity covariance matrix. Centers of Gaussians are placed uniformly around a circle of radios r=5. Each Gaussian represents a cluster. In each iteration the number of clusters increased by one and clustering algorithms are applied on the data.</p><pre class="codeinput">addpath(<span class="string">'./../Spectral'</span>) <span class="comment">% add clustering classes library</span>
+addpath(<span class="string">'./../SimilarityFunctions'</span>) <span class="comment">% add similarity function library</span>
+addpath(<span class="string">'./../ExternalLibs'</span>) <span class="comment">% add third-party library</span>
+clear, clc, close <span class="string">all</span>  <span class="comment">% clear workspace</span>
+r = 5;      <span class="comment">% radios of circle</span>
+N_t = 400;    <span class="comment">% total number of points</span>
+min_K = 5;  <span class="comment">% maximum number of clusters</span>
+max_K = 7;  <span class="comment">% maximum number of clusters</span>
+<span class="keyword">for</span> K=min_K:max_K
+</pre><h2>Data Generation<a name="2"></a></h2><p>Number of points in each cluster</p><pre class="codeinput">    N = floor(N_t/K);
+</pre><p>Find the mean of clusters <img src="spectral_demo_eq14182285784828716855.png" alt="$x_k = r\sin{(\frac{2\pi}{K}k)}$">, <img src="spectral_demo_eq17717933250715678731.png" alt="$y_k = r\cos{(\frac{2\pi}{K}k)}$"></p><pre class="codeinput">    <span class="keyword">for</span> i=1:K
+        cluster_mean(i,:) = [r*sin(2*pi/K*i), r*cos(2*pi/K*i)];
+    <span class="keyword">end</span>
+</pre><p>Generate data</p><pre class="codeinput">    kindx = K-min_K+1; <span class="comment">% index of dataset</span>
+    <span class="keyword">for</span> k=1:K               <span class="comment">% for each cluster</span>
+        <span class="keyword">for</span> i=1:1:N         <span class="comment">% for each point</span>
+            n = (k-1)*N+i;  <span class="comment">% a cumulative index</span>
+
+            <span class="comment">% sample a data point from Gaussian distribution</span>
+            <span class="comment">% each data is put in a cell of cell array</span>
+            data{kindx}{n} = mvnrnd(cluster_mean(k,:), eye(2));
+
+            pdata{kindx}(n,:) = data{kindx}{n}; <span class="comment">% for plot purposes</span>
+
+            <span class="comment">% keep the ground-truth of cluster labels for comparison</span>
+            ground_truth{kindx}(n,:) = k;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+</pre><p>plotting generated data</p><pre class="codeinput">    plot(pdata{kindx}(:,1),pdata{kindx}(:,2),<span class="string">'.k'</span>)
+    title([<span class="string">'generated data for K = '</span> num2str(K)] )
+    xlim([-8 8]);
+    ylim([-8 8]);
+    snapnow();
+
+    clear <span class="string">cluster_mean</span>
+</pre><img vspace="5" hspace="5" src="spectral_demo_01.png" alt=""> <img vspace="5" hspace="5" src="spectral_demo_02.png" alt=""> <img vspace="5" hspace="5" src="spectral_demo_03.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+</pre><h2>Clustering Algorithms<a name="7"></a></h2><p>Making a cell array enumerating the type of clustering algorithms. This is used in makeClustring function to retrieve object of corresponding clustering algorithm.</p><pre class="codeinput">algorithms = {<span class="keyword">...</span>
+                <span class="string">'unnormalized spectral'</span> <span class="keyword">...</span>
+                <span class="string">'normalized spectral (Shi)'</span> <span class="keyword">...</span>
+                <span class="string">'normalized spectral (Ng)'</span>
+                };
+</pre><p>Clustering algorithms are applied on each of datasets</p><pre class="codeinput"><span class="keyword">for</span> K=min_K:max_K
+    kindx = K-min_K+1; <span class="comment">% index of dataset</span>
+    <span class="comment">% for each algorithm</span>
+    <span class="keyword">for</span> a=1:length(algorithms)
+</pre><p>make algorithm object</p><pre class="codeinput">        clustering_algo = <span class="keyword">...</span>
+            makeClustring(algorithms{a},K,@gaussianSim2D);
+        <span class="comment">% run the algorithm</span>
+        result = clustering_algo.cluster(data{kindx});
+        <span class="comment">% retrive the results</span>
+        idx{kindx} = clustering_algo.getResultIdx();
+</pre><p>Calculating Adjacent mutual information (AMI) [4] metric for each result</p><pre class="codeinput">        ami_metric(kindx,a) = ami(result,ground_truth{kindx});
+</pre><pre class="codeinput">    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><h2>Results<a name="13"></a></h2><p>This section the results f clustering algorithms are shown and compared based on AMI metric.</p><p>plotting clusters</p><pre class="codeinput">fig = figure(<span class="string">'Visible'</span>,<span class="string">'off'</span>, <span class="string">'Position'</span>, [1,1,2000,550]);
+<span class="keyword">for</span> K=min_K:max_K
+    kindx = K-min_K+1; <span class="comment">% index of dataset</span>
+    <span class="comment">% for each algorithm</span>
+    <span class="keyword">for</span> a=1:length(algorithms)
+
+        <span class="comment">% plot data with clusters coloring</span>
+        subplot(1,3,a)
+        colors = lines(K); <span class="comment">% color values for clusters</span>
+        <span class="keyword">for</span> k=1:K
+            plot(pdata{kindx}(idx{kindx}{k},1),<span class="keyword">...</span>
+                pdata{kindx}(idx{kindx}{k},2),<span class="string">'.'</span>,<span class="keyword">...</span>
+                <span class="string">'Color'</span>, colors(k,:),<span class="keyword">...</span>
+                <span class="string">'MarkerSize'</span>, 10);
+            hold <span class="string">on</span>
+        <span class="keyword">end</span>
+        title([<span class="string">'Result of '</span> algorithms{a}])
+        xlim([-8 8]);
+        ylim([-8 8]);
+        hold <span class="string">off</span>
+    <span class="keyword">end</span>
+    suptitle([<span class="string">'K = '</span> num2str(K)])
+    set(fig,<span class="string">'Visible'</span>,<span class="string">'on'</span>)
+    snapnow();
+    set(fig,<span class="string">'Visible'</span>,<span class="string">'off'</span>)
+<span class="keyword">end</span>
+delete(fig)
+</pre><img vspace="5" hspace="5" src="spectral_demo_04.png" alt=""> <img vspace="5" hspace="5" src="spectral_demo_05.png" alt=""> <img vspace="5" hspace="5" src="spectral_demo_06.png" alt=""> <p>plotting AMI</p><pre class="codeinput">figure
+plot(min_K:max_K,ami_metric')
+ylim([0 1.05]);
+xlabel(<span class="string">'K (Number of clusters)'</span>)
+ylabel(<span class="string">'AMI'</span>)
+legend(algorithms, <span class="string">'Location'</span>,<span class="string">'southwest'</span>)
+title(<span class="string">'comparison of algorithms based on AMI metric'</span>)
+</pre><img vspace="5" hspace="5" src="spectral_demo_07.png" alt=""> <h2>References<a name="16"></a></h2><p>[1] Luxburg, U. (2007). A tutorial on spectral clustering. Statistics and Computing, 17(4), 395&#8211;416.</p><p>[2] SHi, J., &amp; Malik, J. (2000). Normalized cuts and image segmentation. IEEE Transactions on Pattern Analysis and Machine Intelligence, 22(8), 888&#8211;905.</p><p>[3] Ng, A. Y., Jordan, M. I., &amp; Weiss, Y. (2002). On Spectral Clustering: Analysis and an algorithm. In Advances in Neural Information Processing Systems (pp. 849&#8211;856).</p><p>[4] Vinh, N. X., Epps, J., &amp; Bailey, J. (2010). Information Theoretic Measures for Clusterings Comparison: Variants, Properties, Normalization and Correction for Chance. The Journal of Machine Learning Research, 11, 2837&#8211;2854.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Evaluation Spectral Clustering Algorithms
+% *Vahid Bastani - Sep. 2015*
+%
+% Evaluation of spectral clustering algorithms including unnormalized
+% spectral clustering [1], normalized spectral clustering according to [2] and
+% normalized spectral clustering according to [3].
+
+%% 
+% In each iteration a set of random data are generated using K number of
+% 2-D Gaussian distribution with identity covariance matrix. Centers of
+% Gaussians are placed uniformly around a circle of radios r=5. Each
+% Gaussian represents a cluster. In each iteration the number of clusters
+% increased by one and clustering algorithms are applied on the data.
+
+addpath('./../Spectral') % add clustering classes library
+addpath('./../SimilarityFunctions') % add similarity function library
+addpath('./../ExternalLibs') % add third-party library
+clear, clc, close all  % clear workspace
+r = 5;      % radios of circle
+N_t = 400;    % total number of points
+min_K = 5;  % maximum number of clusters
+max_K = 7;  % maximum number of clusters
+for K=min_K:max_K
+    %% Data Generation
+    % Number of points in each cluster
+    N = floor(N_t/K);
+    %%
+    % Find the mean of clusters $x_k = r\sin{(\frac{2\pi}{K}k)}$, 
+    % $y_k = r\cos{(\frac{2\pi}{K}k)}$
+    for i=1:K
+        cluster_mean(i,:) = [r*sin(2*pi/K*i), r*cos(2*pi/K*i)];
+    end
+    
+    %%
+    % Generate data 
+    kindx = K-min_K+1; % index of dataset
+    for k=1:K               % for each cluster
+        for i=1:1:N         % for each point
+            n = (k-1)*N+i;  % a cumulative index
+            
+            % sample a data point from Gaussian distribution
+            % each data is put in a cell of cell array
+            data{kindx}{n} = mvnrnd(cluster_mean(k,:), eye(2)); 
+            
+            pdata{kindx}(n,:) = data{kindx}{n}; % for plot purposes
+            
+            % keep the ground-truth of cluster labels for comparison
+            ground_truth{kindx}(n,:) = k; 
+        end
+    end
+    %%
+    % plotting generated data
+    plot(pdata{kindx}(:,1),pdata{kindx}(:,2),'.k')
+    title(['generated data for K = ' num2str(K)] )
+    xlim([-8 8]);
+    ylim([-8 8]);    
+    snapnow();
+    
+    clear cluster_mean 
+end
+
+%% Clustering Algorithms
+
+%%
+% Making a cell array enumerating the type of clustering algorithms. This
+% is used in makeClustring function to retrieve object of corresponding
+% clustering algorithm.
+
+algorithms = {...
+                'unnormalized spectral' ...
+                'normalized spectral (Shi)' ...
+                'normalized spectral (Ng)'
+                };
+%%
+% Clustering algorithms are applied on each of datasets
+for K=min_K:max_K
+    kindx = K-min_K+1; % index of dataset    
+    % for each algorithm
+    for a=1:length(algorithms)
+        %% 
+        % make algorithm object
+        clustering_algo = ...
+            makeClustring(algorithms{a},K,@gaussianSim2D);
+        % run the algorithm
+        result = clustering_algo.cluster(data{kindx});
+        % retrive the results
+        idx{kindx} = clustering_algo.getResultIdx();        
+        
+        
+        %%
+        % Calculating Adjacent mutual information (AMI) [4] metric for each 
+        % result
+        ami_metric(kindx,a) = ami(result,ground_truth{kindx});
+    end
+
+end
+
+
+%% Results
+% This section the results f clustering algorithms are shown and compared
+% based on AMI metric.
+
+%%
+% plotting clusters
+fig = figure('Visible','off', 'Position', [1,1,2000,550]);
+for K=min_K:max_K
+    kindx = K-min_K+1; % index of dataset    
+    % for each algorithm
+    for a=1:length(algorithms)
+        
+        % plot data with clusters coloring
+        subplot(1,3,a)
+        colors = lines(K); % color values for clusters       
+        for k=1:K
+            plot(pdata{kindx}(idx{kindx}{k},1),...
+                pdata{kindx}(idx{kindx}{k},2),'.',...
+                'Color', colors(k,:),...
+                'MarkerSize', 10);
+            hold on
+        end
+        title(['Result of ' algorithms{a}])
+        xlim([-8 8]);
+        ylim([-8 8]);        
+        hold off
+    end
+    suptitle(['K = ' num2str(K)])
+    set(fig,'Visible','on')
+    snapnow();
+    set(fig,'Visible','off')
+end
+delete(fig)
+%%
+% plotting AMI
+figure
+plot(min_K:max_K,ami_metric')
+ylim([0 1.05]);
+xlabel('K (Number of clusters)')
+ylabel('AMI')
+legend(algorithms, 'Location','southwest')
+title('comparison of algorithms based on AMI metric')
+
+%% References
+% [1] Luxburg, U. (2007). A tutorial on spectral clustering. Statistics and Computing, 17(4), 395–416. 
+%
+% [2] SHi, J., & Malik, J. (2000). Normalized cuts and image segmentation. IEEE Transactions on Pattern Analysis and Machine Intelligence, 22(8), 888–905.
+%
+% [3] Ng, A. Y., Jordan, M. I., & Weiss, Y. (2002). On Spectral Clustering: Analysis and an algorithm. In Advances in Neural Information Processing Systems (pp. 849–856).
+%
+% [4] Vinh, N. X., Epps, J., & Bailey, J. (2010). Information Theoretic Measures for Clusterings Comparison: Variants, Properties, Normalization and Correction for Chance. The Journal of Machine Learning Research, 11, 2837–2854.
+
+
+##### SOURCE END #####
+--></body></html>
