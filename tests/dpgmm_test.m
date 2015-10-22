@@ -47,4 +47,5 @@ figure(2)
 h = gcf;
 h.Position = h.Position.*[1 1 2 1];
 dp.clusterData(x,2,100)
+result = dp.getClusteringResults();
 

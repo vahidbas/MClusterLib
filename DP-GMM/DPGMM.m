@@ -46,15 +46,25 @@ classdef DPGMM < handle
             obj.data = data;
             obj.K = Ki; % initial number of clusters
             obj.N = length(data);
+            active_plot = 1;
             
             initialize(obj);
             iter = 0;
             while (~obj.isConverged() && iter<iter_min)
                 iterate(obj)
+                
                 plot(obj)
                 iter = iter+1;
             end
             
+        end
+        
+        function result = getClusteringResults(obj)
+            result.indexes = obj.indicator;
+            result.clusters_number = obj.K;
+            result.probabilities = obj.cluster_prob;
+            result.parameters = obj.cluster_params;
+            result.data_likelihood = obj.data_likelihood(end);
         end
         
     end
