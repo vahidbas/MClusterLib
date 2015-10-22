@@ -3,12 +3,12 @@ clear, close all
 addpath('./../DP-GMM') % add ITM class directory
 
 
-hyper.pseudo_observations = .1;
+hyper.pseudo_observations = .03;
 hyper.expected_mean = [0; 0];
 hyper.degree_of_freedom = 4;
-hyper.expected_covariance = [4 .1;.1 4];
+hyper.expected_covariance = [1 .1;.1 1];
 
-alpha = 5;
+alpha = 1;
 
 %%
 % sample drown from K component mixture of 2-D Gaussian
@@ -46,6 +46,6 @@ dp = DPGMM(hyper,alpha);
 figure(2)
 h = gcf;
 h.Position = h.Position.*[1 1 2 1];
-dp.clusterData(x,2,100)
+dp.clusterData(x,6,100)
 result = dp.getClusteringResults();
 
