@@ -99,7 +99,7 @@ classdef DPGMM < handle
                 ti = p_i(i);  % true index of element
                 for k=1:K_+1
                     param = calcPredictiveParam(obj,k,i);
-                    f_ki(k,i) = mvnpdf(obj.data{ti},param.m,param.C);
+                    f_ki(k,i) = mvnpdf(obj.data{ti},param.m,param.C)+1e-20;
                 end
             end
             
