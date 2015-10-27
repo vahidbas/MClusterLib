@@ -21,6 +21,7 @@ classdef DPGMM < handle
             '   .degree_of_freedom\n' ...
             '   .expected_covariance\n'];
         
+        in_parser;
     end
     
     methods
@@ -39,21 +40,51 @@ classdef DPGMM < handle
             obj.hyper_params = hyper;
             obj.conc_param = alpha;
             
+            % configure input parser
+            obj.in_parser = inputParser;
+            default_plot = 'off';
+            valid_plot = {'on','off'};
+            checkPlot = @(x) any(validatestring(x,valid_plot));
+            
+            default_max_iter = 100;
+            check_max_iter = @(x) x>10;
+            
+            defult_init_K = 2;
+            check_init_K = @(x) x>1;
+            
+            addOptional(obj.in_parser,'Plot',default_plot,checkPlot);
+            addOptional(obj.in_parser,'MaxIterations',default_max_iter,check_max_iter);
+            addOptional(obj.in_parser,'InitialK',defult_init_K,check_init_K);
         end
         % ------------------------------------------------------------
         
-        function clusterData(obj,data,Ki,iter_min, varargin)
+        function clusterData(obj,data, varargin)
             obj.data = data;
-            obj.K = Ki; % initial number of clusters
-            obj.N = length(data);
-            active_plot = 1;
             
+            % parse input
+            parse(obj.in_parser,varargin{:})
+            % initial number of clusters
+            obj.K = obj.in_parser.Results.InitialK; 
+            obj.N = length(data);
+            
+            max_iterations = obj.in_parser.Results.MaxIterations;
+            
+            active_plot = 0;
+            if isequal(obj.in_parser.Results.Plot, 'on')
+                active_plot = 1;
+            end
+            
+            
+            % algorithm
             initialize(obj);
             iter = 0;
-            while (~obj.isConverged() && iter<iter_min)
+            while (~obj.isConverged() && iter<max_iterations)
                 iterate(obj)
                 
-                plot(obj)
+                if (active_plot)
+                    plot(obj)
+                end
+                
                 iter = iter+1;
             end
             

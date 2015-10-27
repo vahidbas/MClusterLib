@@ -46,6 +46,6 @@ dp = DPGMM(hyper,alpha);
 figure(2)
 h = gcf;
 h.Position = h.Position.*[1 1 2 1];
-dp.clusterData(x,6,100)
+dp.clusterData(x,'InitialK',6,'MaxIterations',100, 'Plot', 'on')
 result = dp.getClusteringResults();
 
