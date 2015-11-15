@@ -1,4 +1,4 @@
-classdef DPGMM < handle
+classdef DPGMM < ClusAlgorithm & handle
     properties (Access = private)
         hyper_params
         conc_param       % DP concenteration parameter
@@ -6,88 +6,49 @@ classdef DPGMM < handle
         indicator        % cluster indicator variable
         cluster_prob     % cluster probabilities
         data_likelihood
-        data
         N                % number of elements in dataset
         K           % umber of initial clusters
         p_id             % random peemutation index
     end
     
     properties (Access = private)
-        help_message_hyper = ['The hyper parameter structure should contain ' ...
-            'parameters of Normal Inverse Wishart (NIW)' ...
-            'distribution:\n' ...
-            '   .pseudo_observations\n' ...
-            '   .expected_mean\n' ...
-            '   .degree_of_freedom\n' ...
-            '   .expected_covariance\n'];
-        
-        in_parser;
+        max_iterations
+        active_plot
     end
     
     methods
         % -------------------- Constructor ---------------------------
-        function obj = DPGMM(hyper,alpha)
+        function obj = DPGMM(params)
             
-            field_names = {'pseudo_observations', ...
-                'expected_mean', ...
-                'degree_of_freedom', ...
-                'expected_covariance'};
-            
-            if (~isfield(hyper, field_names))
-                error(obj.help_message_hyper,class(hyper))
+            obj.hyper_params = params.hyper_parameters;
+            obj.conc_param = params.alpha;
+            obj.K = params.InitialK;
+            obj.max_iterations = params.MaxIterations;
+                        
+            obj.active_plot = 0;
+            if isequal(params.Plot, 'on')
+                obj.active_plot = 1;
             end
-            
-            obj.hyper_params = hyper;
-            obj.conc_param = alpha;
-            
-            % configure input parser
-            obj.in_parser = inputParser;
-            default_plot = 'off';
-            valid_plot = {'on','off'};
-            checkPlot = @(x) any(validatestring(x,valid_plot));
-            
-            default_max_iter = 100;
-            check_max_iter = @(x) x>10;
-            
-            defult_init_K = 2;
-            check_init_K = @(x) x>1;
-            
-            addOptional(obj.in_parser,'Plot',default_plot,checkPlot);
-            addOptional(obj.in_parser,'MaxIterations',default_max_iter,check_max_iter);
-            addOptional(obj.in_parser,'InitialK',defult_init_K,check_init_K);
         end
         % ------------------------------------------------------------
         
-        function clusterData(obj,data, varargin)
-            obj.data = data;
-            
-            % parse input
-            parse(obj.in_parser,varargin{:})
-            % initial number of clusters
-            obj.K = obj.in_parser.Results.InitialK; 
-            obj.N = length(data);
-            
-            max_iterations = obj.in_parser.Results.MaxIterations;
-            
-            active_plot = 0;
-            if isequal(obj.in_parser.Results.Plot, 'on')
-                active_plot = 1;
-            end
-            
-            
+        function clusterImp(obj)
+             
+            obj.N = length(obj.data);
+         
             % algorithm
             initialize(obj);
             iter = 0;
-            while (~obj.isConverged() && iter<max_iterations)
+            while (~obj.isConverged() && iter<obj.max_iterations)
                 iterate(obj)
                 
-                if (active_plot)
+                if (obj.active_plot)
                     plot(obj)
                 end
                 
                 iter = iter+1;
             end
-            
+            res = obj.indicator;
         end
         
         function result = getClusteringResults(obj)
