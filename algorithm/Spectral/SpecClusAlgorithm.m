@@ -47,7 +47,7 @@ classdef SpecClusAlgorithm < ClusAlgorithm & handle
             obj.calcLaplacian();
             obj.calcEigen();
             T = calcTransform(obj);
-            res = kmeans(T, obj.cluster_number);            
+            res.indexes = kmeans(T, obj.cluster_number);            
         end
     end
     
