@@ -1,7 +1,5 @@
 clear, close all
 % test DPGMM class
-addpath('./../DP-GMM') % add ITM class directory
-
 
 hyper.pseudo_observations = .03;
 hyper.expected_mean = [0; 0];
@@ -42,10 +40,8 @@ clear i K N col
 
 %%
 
-dp = DPGMM(hyper,alpha);
+dp = makeClustring('d',hyper,alpha,'InitialK',6,'MaxIterations',100, 'Plot', 'on');
 figure(2)
-h = gcf;
-h.Position = h.Position.*[1 1 2 1];
-dp.clusterData(x,'InitialK',6,'MaxIterations',100, 'Plot', 'on')
-result = dp.getClusteringResults();
+result = dp.cluster(x);
+
 

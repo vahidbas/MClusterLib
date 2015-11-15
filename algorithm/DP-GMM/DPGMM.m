@@ -32,7 +32,7 @@ classdef DPGMM < ClusAlgorithm & handle
         end
         % ------------------------------------------------------------
         
-        function clusterImp(obj)
+        function res = clusterImp(obj)
              
             obj.N = length(obj.data);
          
@@ -48,7 +48,7 @@ classdef DPGMM < ClusAlgorithm & handle
                 
                 iter = iter+1;
             end
-            res = obj.indicator;
+            res = getClusteringResults(obj);
         end
         
         function result = getClusteringResults(obj)
