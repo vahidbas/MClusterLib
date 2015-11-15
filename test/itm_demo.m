@@ -1,4 +1,3 @@
-addpath('./../ITM') % add ITM class directory
 
 x = rand(1,1000)*20-10;
 y = rand(1,1000)*20-10;
