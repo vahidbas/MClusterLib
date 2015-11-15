@@ -41,7 +41,7 @@ classdef SpecClusAlgorithm < ClusAlgorithm & handle
         end
         
         %clustring algorithm
-        function res = clusterB(obj,varargin)                        
+        function res = clusterImp(obj,varargin)                        
             obj.calcAdjMatrix();
             obj.calcDegMatrix();
             obj.calcLaplacian();

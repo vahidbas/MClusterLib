@@ -23,7 +23,7 @@ classdef (Abstract) ClusAlgorithm < handle
             
             obj.checkDatat(); % check the input data
                        
-            obj.result = obj.clusterB();
+            obj.result = obj.clusterImp();
             
             res = obj.result;
         end
@@ -63,6 +63,6 @@ classdef (Abstract) ClusAlgorithm < handle
     end
     
     methods (Abstract)
-        res = clusterB(obj)
+        res = clusterImp(obj)
     end
 end
