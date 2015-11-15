@@ -12,9 +12,6 @@
 % Gaussian represents a cluster. In each iteration the number of clusters
 % increased by one and clustering algorithms are applied on the data.
 
-addpath('./../Spectral') % add clustering classes library
-addpath('./../SimilarityFunctions') % add similarity function library
-addpath('./../ExternalLibs') % add third-party library
 clear, clc, close all  % clear workspace
 r = 5;      % radios of circle
 N_t = 400;    % total number of points
@@ -67,9 +64,9 @@ end
 % clustering algorithm.
 
 algorithms = {...
-                'unnormalized spectral' ...
-                'normalized spectral (Shi)' ...
-                'normalized spectral (Ng)'
+                'UnSpectral' ...
+                'NrShiSpectral' ...
+                'NrShiSpectral'
                 };
 %%
 % Clustering algorithms are applied on each of datasets
@@ -90,7 +87,7 @@ for K=min_K:max_K
         %%
         % Calculating Adjacent mutual information (AMI) [4] metric for each 
         % result
-        ami_metric(kindx,a) = ami(result,ground_truth{kindx});
+        ami_metric(kindx,a) = ami(result.indexes,ground_truth{kindx});
     end
 
 end
