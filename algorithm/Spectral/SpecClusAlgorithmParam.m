@@ -1,7 +1,6 @@
 classdef SpecClusAlgorithmParam < AlgoParam & handle
     methods 
-        function makeParser(obj)
-            obj.parser = inputParser;
+        function configParser(obj)            
             
             check_num_cluster = @(x) mod(x,1) == 0 & x>=2;
             check_sim_func = @(x) isa(x,'function_handle');

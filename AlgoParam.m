@@ -11,12 +11,13 @@ classdef (Abstract) AlgoParam < handle
     end
     methods (Access = private)
         function parse(obj,input)
-            obj.makeParser(); % make parser object
+            obj.parser = inputParser;
+            obj.configParser(); % make parser object
             obj.parser.parse(input{:});
             obj.params = obj.parser.Results;
         end
     end
     methods(Abstract)
-        makeParser(obj)
+        configParser(obj)
     end
 end
