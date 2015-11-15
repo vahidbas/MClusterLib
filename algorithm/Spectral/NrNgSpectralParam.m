@@ -1,0 +1,2 @@
+classdef NrNgSpectralParam < SpecClusAlgorithmParam
+end

@@ -1,0 +1,2 @@
+classdef UnSpectralParam < SpecClusAlgorithmParam
+end

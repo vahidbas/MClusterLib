@@ -19,9 +19,9 @@ classdef SpecClusAlgorithm < ClusAlgorithm & handle
     
     methods
         
-        function obj = SpecClusAlgorithm(varargin)
-            obj.cluster_number = varargin{1};
-            obj.similarity_function = varargin{2};
+        function obj = SpecClusAlgorithm(params)
+            obj.cluster_number = params.number_of_clusters;
+            obj.similarity_function = params.similarity_function;
         end
         
         function mat = getLaplacian(obj)

@@ -1,8 +1,8 @@
-classdef NrJorSpecClustring < SpecClusAlgorithm & handle
+classdef NrNgSpectral < SpecClusAlgorithm & handle
     methods
         % constructor
-        function obj = NrJorSpecClustring(varargin)
-            obj = obj@SpecClusAlgorithm(varargin{:});
+        function obj = NrNgSpectral(params)
+            obj = obj@SpecClusAlgorithm(params);
             obj.name = 'normalized spectral clustring (Ng, Jordan and Weiss 2002)';            
             
         end

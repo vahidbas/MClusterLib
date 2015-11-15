@@ -1,9 +1,9 @@
-classdef NrShiSpecClustring < SpecClusAlgorithm & handle
+classdef UnSpectral < SpecClusAlgorithm & handle
     methods
         % constructor
-        function obj = NrShiSpecClustring(varargin)
-            obj = obj@SpecClusAlgorithm(varargin{:});
-            obj.name = 'normalized spectral clustring (Shi and Malik 2000)';            
+        function obj = UnSpectral(params)
+            obj = obj@SpecClusAlgorithm(params);
+            obj.name = 'unnormalized spectral clustring';            
             
         end
         
@@ -12,7 +12,7 @@ classdef NrShiSpecClustring < SpecClusAlgorithm & handle
         end
         
         function calcEigen(obj)
-            [v,d] = eig(obj.laplacian,obj.degree_matrix);
+            [v,d] = eig(obj.laplacian);
             obj.eigen_vectors = v;
             obj.eigen_values = diag(d);
         end
