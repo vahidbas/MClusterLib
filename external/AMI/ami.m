@@ -31,7 +31,7 @@
 %       Bailey, J., Journal of Machine Learning Research, 11(Oct), pages
 %       2837-2854, 2010
 
-function [AMI_]=ami(true_mem,mem)
+function [AMI_]=AMI(true_mem,mem)
 if nargin==1
     T=true_mem; %contingency table pre-supplied
 elseif nargin==2
