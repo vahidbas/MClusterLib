@@ -67,9 +67,9 @@ end
 % clustering algorithm.
 
 algorithms = {...
-                'unnormalized spectral' ...
-                'normalized spectral (Shi)' ...
-                'normalized spectral (Ng)'
+                'UnSpectral' ...
+                'NrShiSpectral' ...
+                'NrNgSpectral'
                 };
 %%
 % Clustering algorithms are applied on each of datasets
@@ -90,7 +90,7 @@ for K=min_K:max_K
         %%
         % Calculating Adjacent mutual information (AMI) [4] metric for each 
         % result
-        ami_metric(kindx,a) = ami(result,ground_truth{kindx});
+        ami_metric(kindx,a) = ami(result.indexes,ground_truth{kindx});
     end
 
 end
