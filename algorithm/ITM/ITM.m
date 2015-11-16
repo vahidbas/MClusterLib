@@ -18,6 +18,9 @@ classdef ITM < ClusAlgorithm & handle
         emax
     end% END PROPERTIES
     
+    properties (Access = private)
+        active_plot
+    end
     
     methods
         %==================================================================
@@ -31,17 +34,44 @@ classdef ITM < ClusAlgorithm & handle
             obj.emax = params.resolution_threshold; % resolution threshold
             obj.num = 0;
             
+            obj.active_plot = 0;
+            if isequal(params.Plot, 'on')
+                obj.active_plot = 1;
+            end
+            
         end% Constructor
         %==================================================================
         function res = clusterImp(obj)
             % loop through data
             for i = 1:length(obj.data)
-                step(net, obj.data(i));
+                step(obj, obj.data{i});
+                if obj.active_plot == 1
+                    if obj.num > 2
+                        plot(obj, 'edge', 'on');
+                        hold on
+                        plot(obj.data{i}(1),obj.data{i}(2),'ob');
+                        hold off
+                    end                
+                pause(0.1)
+                end
             end
+            res = getClusterResults(obj);
         end
         
     end
     methods (Access = private)
+        function res = getClusterResults(obj)
+            for i = 1:length(obj.data)
+                obj.last_sti = obj.data{i};
+                matching(obj);
+                res.indexes(i) = obj.n;
+                
+            end
+            for i=1:obj.num
+                res.weight(:,i)=obj.nodes(i).w';
+            end
+        end
+        
         function matching(obj)
             
             for  i = 1:obj.num
@@ -220,11 +250,12 @@ classdef ITM < ClusAlgorithm & handle
                 
                 M = del_edges(obj);
                 M = triu(M);
+                M = obj.adj_mat;
                 for i = 1:obj.num
                     for j = 1:obj.num
                         if M(i,j) == 1
                             h(end+1) = plot(hax,[obj.nodes(i).w(1) obj.nodes(j).w(1)],...
-                                [obj.nodes(i).w(2) obj.nodes(j).w(2)],'--r');
+                                [obj.nodes(i).w(2) obj.nodes(j).w(2)],'-r');
                         end
                     end
                 end
