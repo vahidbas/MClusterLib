@@ -12,9 +12,6 @@
 % Gaussian represents a cluster. In each iteration the number of clusters
 % increased by one and clustering algorithms are applied on the data.
 
-addpath('./../Spectral') % add clustering classes library
-addpath('./../SimilarityFunctions') % add similarity function library
-addpath('./../ExternalLibs') % add third-party library
 clear, clc, close all  % clear workspace
 r = 5;      % radios of circle
 N_t = 400;    % total number of points
@@ -69,7 +66,11 @@ end
 algorithms = {...
                 'UnSpectral' ...
                 'NrShiSpectral' ...
+<<<<<<< HEAD
                 'NrNgSpectral'
+=======
+                'NrShiSpectral'
+>>>>>>> itm_interface
                 };
 %%
 % Clustering algorithms are applied on each of datasets

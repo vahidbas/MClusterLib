@@ -1,9 +1,9 @@
-classdef ITM < handle
-   
-    properties 
+classdef ITM < ClusAlgorithm & handle
+    
+    properties
         last_sti; % the last recivied stimuli
     end
-    properties         
+    properties
         n;
         s;
         num;
@@ -18,43 +18,60 @@ classdef ITM < handle
         emax
     end% END PROPERTIES
     
+    properties (Access = private)
+        active_plot
+    end
     
     methods
         %==================================================================
         % Constructor
-        function obj = ITM(varargin)
+        function obj = ITM(params)
             % modified constructor
             if nargin < 1
                 error('inputs are not enough');
             end
             
-            obj.emax = varargin{1}; % resolution threshold
+            obj.emax = params.resolution_threshold; % resolution threshold
             obj.num = 0;
             
+            obj.active_plot = 0;
+            if isequal(params.Plot, 'on')
+                obj.active_plot = 1;
+            end
+            
         end% Constructor
-        
-%         function obj = itm_net(varargin)
-%             if nargin < 2
-%                 error('inputs are not enough');
-%             end
-%             
-%             obj.emax = varargin{2}; % resolution threshold
-%             
-%             in_w = varargin{1}; % initial weights
-%             
-%             N = size(in_w,2);
-%             
-%             for i =1:N
-%                 obj.nodes(i).w = in_w(:,i);
-%                 obj.nodes(i).n = 0;
-%                 obj.nodes(i).s = eye(size(in_w,1));
-%                 obj.nodes(i).c = obj.nodes(i).s;
-%             end
-%             
-%             obj.adj_mat = ones(N)-eye(N);
-%             obj.num = N;
-%         end% Constructor        
         %==================================================================
+        function res = clusterImp(obj)
+            % loop through data
+            for i = 1:length(obj.data)
+                step(obj, obj.data{i});
+                if obj.active_plot == 1
+                    if obj.num > 2
+                        plot(obj, 'edge', 'on');
+                        hold on
+                        plot(obj.data{i}(1),obj.data{i}(2),'ob');
+                        hold off
+                    end                
+                pause(0.1)
+                end
+            end
+            res = getClusterResults(obj);
+        end
+        
+    end
+    methods (Access = private)
+        function res = getClusterResults(obj)
+            for i = 1:length(obj.data)
+                obj.last_sti = obj.data{i};
+                matching(obj);
+                res.indexes(i) = obj.n;
+                
+            end
+            for i=1:obj.num
+                res.weight(:,i)=obj.nodes(i).w';
+            end
+        end
+        
         function matching(obj)
             
             for  i = 1:obj.num
@@ -75,17 +92,17 @@ classdef ITM < handle
             obj.nodes(obj.n).w = (obj.nodes(obj.n).n * obj.nodes(obj.n).w + ...
                 obj.last_sti)/(obj.nodes(obj.n).n+1);
             obj.nodes(obj.n).s = (obj.nodes(obj.n).n * obj.nodes(obj.n).s + ...
-                obj.last_sti*obj.last_sti')/(obj.nodes(obj.n).n+1);            
+                obj.last_sti*obj.last_sti')/(obj.nodes(obj.n).n+1);
             obj.nodes(obj.n).n = obj.nodes(obj.n).n+1;
             
             N = obj.nodes(obj.n).n;
             if N>2
-%             obj.nodes(obj.n).c = obj.nodes(obj.n).s  ...
-%                 - obj.nodes(obj.n).w*obj.nodes(obj.n).w' ...
-%                 +.1*eye(size(obj.nodes(obj.n).w,1));
-            obj.nodes(obj.n).c = obj.nodes(obj.n).s  ...
-                - obj.nodes(obj.n).w*obj.nodes(obj.n).w';
-
+                %             obj.nodes(obj.n).c = obj.nodes(obj.n).s  ...
+                %                 - obj.nodes(obj.n).w*obj.nodes(obj.n).w' ...
+                %                 +.1*eye(size(obj.nodes(obj.n).w,1));
+                obj.nodes(obj.n).c = obj.nodes(obj.n).s  ...
+                    - obj.nodes(obj.n).w*obj.nodes(obj.n).w';
+                
             end
             
             %XX
@@ -110,7 +127,7 @@ classdef ITM < handle
                 % if (n-w).(s-w) <= 0 w is inside of Tales sphere made by s
                 % and n
                 d = (obj.nodes(obj.n).w - obj.nodes(m).w)'...
-                    *(obj.nodes(obj.s).w - obj.nodes(m).w);                
+                    *(obj.nodes(obj.s).w - obj.nodes(m).w);
                 if d <= 0
                     % remove edge
                     obj.adj_mat(obj.n,m) = 0;
@@ -131,7 +148,7 @@ classdef ITM < handle
                         % adjust n and s indecies
                         if obj.n > m
                             obj.n = obj.n-1;
-                        end % if                      
+                        end % if
                         if obj.s > m
                             obj.s = obj.s-1;
                         end % if
@@ -230,24 +247,25 @@ classdef ITM < handle
             hold(hax, 'on')
             
             if edge == 1
-                        
-            M = del_edges(obj);
-            M = triu(M);
-            for i = 1:obj.num
-                for j = 1:obj.num
-                    if M(i,j) == 1
-                        h(end+1) = plot(hax,[obj.nodes(i).w(1) obj.nodes(j).w(1)],...
-                            [obj.nodes(i).w(2) obj.nodes(j).w(2)],'--r');
+                
+                M = del_edges(obj);
+                M = triu(M);
+                M = obj.adj_mat;
+                for i = 1:obj.num
+                    for j = 1:obj.num
+                        if M(i,j) == 1
+                            h(end+1) = plot(hax,[obj.nodes(i).w(1) obj.nodes(j).w(1)],...
+                                [obj.nodes(i).w(2) obj.nodes(j).w(2)],'-r');
+                        end
                     end
                 end
-            end
-            
+                
             end
             
             if label == 1
-             for   i = 1:obj.num
-                h(end+1) = text(x(i)+.4,y(i)+.4, num2str(i),'Parent',hax);
-             end
+                for   i = 1:obj.num
+                    h(end+1) = text(x(i)+.4,y(i)+.4, num2str(i),'Parent',hax);
+                end
             end
             
             hold(hax, 'off')
@@ -273,13 +291,13 @@ classdef ITM < handle
             %XX
             
             if obj.num >=2
-                               
-            matching(obj);
-            ref_vec_adapt(obj);
-            edg_adapt(obj);
-            node_adapt(obj);
-            
-            %XX
+                
+                matching(obj);
+                ref_vec_adapt(obj);
+                edg_adapt(obj);
+                node_adapt(obj);
+                
+                %XX
             elseif obj.num == 1
                 obj.n = 1;
                 
@@ -291,13 +309,13 @@ classdef ITM < handle
                     
                     obj.adj_mat(obj.num,obj.n) = 1;
                     obj.adj_mat(obj.n,obj.num) = 1;
-                              
+                    
                     obj.nodes(obj.num).s = obj.last_sti*obj.last_sti';
                     obj.nodes(obj.num).c = eye(size(obj.nodes(obj.num).w,1));
                     obj.nodes(obj.num).n = 1;
-                    obj.add_node = obj.num;                    
+                    obj.add_node = obj.num;
                 end
-               
+                
             elseif obj.num == 0
                 obj.nodes(1).w = sti;
                 obj.nodes(1).n = 1;
@@ -311,7 +329,7 @@ classdef ITM < handle
             end
             %XX
             if nargin ==3
-            probs = prob_z(obj,sig);
+                probs = prob_z(obj,sig);
             end
             
         end % function step
@@ -321,10 +339,10 @@ classdef ITM < handle
             if nargin == 2
                 sig = varargin{1};
                 
-            elseif nargin == 3                
+            elseif nargin == 3
                 sti = varargin{1};
                 obj.last_sti = sti;
-                sig = varargin{2};                
+                sig = varargin{2};
             end
             
             for  i = 1:obj.num
@@ -362,7 +380,7 @@ classdef ITM < handle
                 M(tri(i,2),tri(i,3)) = 1;
                 M(tri(i,3),tri(i,2)) = 1;
                 
-            end 
+            end
             
             obj.del_mat = M;
             
@@ -372,13 +390,13 @@ classdef ITM < handle
         function new = copy(this)
             % Instantiate new object of the same class.
             new = feval(class(this),0,0);
- 
+            
             % Copy all non-hidden properties.
             p = properties(this);
             for i = 1:length(p)
                 new.(p{i}) = this.(p{i});
             end
         end % function copy
-
+        
     end %END METHODS
 end%END CLASSDEF
