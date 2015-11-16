@@ -29,13 +29,13 @@ classdef (Abstract) ClusAlgorithm < handle
         end
         
         function idx = getResultIdx(obj)
-            numclus = max(obj.result);
+            numclus = max(obj.result.indexes);
             if isempty(numclus)
                 error('no results is available')
             end
             
             for i=1:numclus
-                idx{i} = find(obj.result == i);
+                idx{i} = find(obj.result.indexes == i);
             end
         end
     end
@@ -62,7 +62,7 @@ classdef (Abstract) ClusAlgorithm < handle
         
     end
     
-    methods (Abstract)
+    methods (Abstract, Access = protected)
         res = clusterImp(obj)
     end
 end

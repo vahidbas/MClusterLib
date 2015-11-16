@@ -17,7 +17,7 @@ classdef (Abstract) AlgoParam < handle
             obj.params = obj.parser.Results;
         end
     end
-    methods(Abstract)
+    methods(Abstract, Access = protected)
         configParser(obj)
     end
 end

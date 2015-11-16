@@ -39,7 +39,8 @@ classdef SpecClusAlgorithm < ClusAlgorithm & handle
         function mat = getEigValues(obj)
             mat = obj.eigen_values;
         end
-        
+    end
+    methods (Access = protected)
         %clustring algorithm
         function res = clusterImp(obj,varargin)                        
             obj.calcAdjMatrix();

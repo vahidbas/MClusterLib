@@ -7,7 +7,7 @@ classdef DPGMMParam < AlgoParam & handle
         
     end
     
-    methods
+    methods(Access = protected)
         function configParser(obj)
             
             check_hyper_param = @checkHyperParam;

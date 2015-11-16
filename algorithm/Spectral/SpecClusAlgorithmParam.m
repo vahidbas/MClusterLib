@@ -1,5 +1,5 @@
 classdef SpecClusAlgorithmParam < AlgoParam & handle
-    methods 
+    methods (Access = protected)
         function configParser(obj)            
             
             check_num_cluster = @(x) mod(x,1) == 0 & x>=2;

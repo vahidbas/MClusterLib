@@ -31,7 +31,8 @@ classdef DPGMM < ClusAlgorithm & handle
             end
         end
         % ------------------------------------------------------------
-        
+    end
+    methods (Access = protected)
         function res = clusterImp(obj)
              
             obj.N = length(obj.data);
