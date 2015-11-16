@@ -2,7 +2,7 @@ classdef ITMParam < AlgoParam & handle
     %ITMPARAM Summary of this class goes here
     %   Detailed explanation goes here
     
-    methods
+    methods (Access = protected)
         function configParser(obj)
             check_resolution = @(x) x>0;
             

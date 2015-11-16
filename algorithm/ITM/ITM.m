@@ -41,6 +41,8 @@ classdef ITM < ClusAlgorithm & handle
             
         end% Constructor
         %==================================================================
+    end
+    methods (Access = protected)
         function res = clusterImp(obj)
             % loop through data
             for i = 1:length(obj.data)
