@@ -1,5 +1,5 @@
 clear, close all
-% test DPGMM class
+% test MeanShift class
 hyper.pseudo_observations = .03;
 hyper.expected_mean = [0; 0];
 hyper.degree_of_freedom = 4;
@@ -10,9 +10,6 @@ N = 300;
 
 x = gaussian_mixture(hyper,alpha,K,N);
 
+dp = makeClustring('MeanShift',2);
 
-dp = makeClustring('d',hyper,alpha,'InitialK',6,'MaxIterations',100, 'Plot', 'on');
-figure(2)
 result = dp.cluster(x);
-
-
